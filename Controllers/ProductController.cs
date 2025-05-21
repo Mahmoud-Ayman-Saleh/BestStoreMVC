@@ -5,17 +5,17 @@ namespace BestStoreMVC.Controllers
 {
     public class ProductController : Controller
     {
-        private readonly ApplicationDbContext context;
+        private readonly ApplicationDbContext _context;
 
         public ProductController(ApplicationDbContext context)
         {
-            this.context = context;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult DisplayProducts()
         {
-            var product_list = context.Products.ToList();
-            return View(product_list);
+            var products = _context.Products.ToList();
+            return View(products);
         }
     }
 }
