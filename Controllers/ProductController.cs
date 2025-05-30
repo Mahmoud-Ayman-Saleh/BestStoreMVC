@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BestStoreMVC.Controllers
 {
+    [Route("/Admin/[controller]/{action=DisplayProducts}/{id?}")]
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _context;
