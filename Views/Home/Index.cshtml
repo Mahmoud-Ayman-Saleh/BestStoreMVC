@@ -1,8 +1,31 @@
-﻿@{
+﻿@model IEnumerable<BestStoreMVC.Models.Product>
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="hero" style="text-align:center; margin-bottom:2rem;">
+    <img src="~/images/hero.png" alt="Hero Image" style="max-width:100%; height:auto; border-radius:8px;" />
+    <h1 class="display-4" style="margin-top:1rem;">Welcome to BestStore</h1>
+    <p>Discover the latest and greatest products!</p>
 </div>
+
+<section>
+    <h2>New Products</h2>
+    <div class="row" style="display:flex; flex-wrap:wrap; gap:1.5rem;">
+        @foreach (var product in Model)
+        {
+            <div class="card" style="width: 18rem; border:1px solid #eee; border-radius:8px; padding:1rem;">
+                <img src="@Url.Content($"~/products/{product.ImageFileName}")" alt="@product.Name" style="width:100%; height:180px; object-fit:cover; border-radius:4px;" />
+
+
+                <div class="card-body">
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="card-text">@product.Brand</p>
+                    <p class="card-text"><strong>@product.Price.ToString("C")</strong></p>
+                    <a class="btn btn-primary btn-sm mb-2" asp-controller="Store" 
+                    asp-action="Details" asp-route-id="@product.Id" role="button">Details</a>
+                </div>
+            </div>
+        }
+    </div>
+</section>

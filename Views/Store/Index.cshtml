@@ -1,0 +1,70 @@
+﻿@model StoreSearchModel
+@{
+}
+<h2>Products</h2>
+
+<form class="row g-3 mb-3">
+    <div class="col-lg-2 col-md-4">
+        <select class="form-select" name="brand" asp-for="Brand" onchange="this.form.submit()">
+            <option value="">All Brands</option>
+            <option value="Samsung">Samsung</option>
+            <option value="Apple">Apple</option>
+            <option value="Nokia">Nokia</option>
+            <option value="HP">HP</option>
+        </select>
+    </div>
+    <div class="col-lg-2 col-md-4">
+        <select class="form-select" name="category" asp-for="Category" onchange="this.form.submit()">
+            <option value="">All Categories</option>
+            <option value="Phones">Phones</option>
+            <option value="Computers">Computers</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Printers">Printers</option>
+            <option value="Cameras">Cameras</option>
+            <option value="Other">Other</option>
+        </select>
+    </div>
+    <div class="col-lg-2 col-md-4">
+        <select class="form-select" name="sort" asp-for="Sort" onchange="this.form.submit()">
+            <option value="newest">Order By Newest</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+        </select>
+    </div>
+    <div class="col-lg-6 col-md-12 d-flex">
+        <input class="form-control me-2" name="search" asp-for="Search" placeholder="Search by Name">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+    </div>
+</form>
+
+
+<div class="row" style="display:flex; flex-wrap:wrap; gap:1.5rem;">
+    @foreach (var product in ViewBag.Products)
+    {
+        <div class="card" style="width: 18rem; border:1px solid #eee; border-radius:8px; padding:1rem;">
+            <img src="@Url.Content($"~/products/{product.ImageFileName}")" alt="@product.Name" style="width:100%; height:180px; object-fit:cover; border-radius:4px;" />
+
+
+            <div class="card-body">
+                <h5 class="card-title">@product.Name</h5>
+                <p class="card-text">@product.Brand</p>
+                <p class="card-text"><strong>@product.Price.ToString("C")</strong></p>
+                <a class="btn btn-primary btn-sm mb-2" asp-controller="Store" 
+                asp-action="Details" asp-route-id="@product.Id" role="button">Details</a>
+            </div>
+        </div>
+    }
+</div>
+
+<nav>
+    <ul class="pagination">
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            string active = "";
+            if (i == ViewBag.PageIndex) active = "active";
+            <li class="page-item @active">
+                <a class="page-link" asp-route-pageIndex="@i">@i</a>
+            </li>
+        }
+    </ul>
+</nav>

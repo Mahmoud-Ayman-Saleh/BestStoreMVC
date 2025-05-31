@@ -20,9 +20,14 @@ namespace BestStoreMVC.Controllers
 
         public IActionResult Index()
         {
-            var products = _context.Products.ToList();
-            return View(products);
+            // Get the 4 most recent products
+            var latestProducts = _context.Products
+                .OrderByDescending(p => p.CreatedAt)
+                .Take(4)
+                .ToList();
+            return View(latestProducts);
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

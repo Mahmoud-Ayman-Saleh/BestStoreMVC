@@ -53,13 +53,6 @@
                             </p>
                             <h4 class="card-text text-primary mb-3">@product.Price.ToString("C")</h4>
                             <div class="mt-auto d-flex justify-content-between">
-                                <a class="btn btn-outline-primary btn-sm"
-                                   asp-controller="Store"
-                                   asp-action="Details"
-                                   asp-route-id="@product.Id"
-                                   role="button">
-                                    Details
-                                </a>
                                 <a class="btn btn-primary btn-sm"
                                    asp-controller="Product"
                                    asp-action="Edit"
