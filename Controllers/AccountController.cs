@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using BestStoreMVC.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -99,7 +100,7 @@ namespace BestStoreMVC.Controllers
 
             return View();
         }
-        
+
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginDto loginDto)
@@ -127,6 +128,18 @@ namespace BestStoreMVC.Controllers
             }
 
             return View(loginDto);
+        }
+
+
+        [Authorize]
+        public IActionResult Profile()
+        {
+            return View();
+        }
+        
+        public IActionResult AccessDenied()
+        {
+            return RedirectToAction("Index", "Home");
         }
         
     }
