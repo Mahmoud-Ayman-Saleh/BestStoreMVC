@@ -132,10 +132,62 @@ namespace BestStoreMVC.Controllers
 
 
         [Authorize]
-        public IActionResult Profile()
+        public async Task<IActionResult> Profile()
         {
-            return View();
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var profileDto = new ProfileDto
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email ?? string.Empty,
+                PhoneNumber = user.PhoneNumber,
+                Address = user.Address
+            };
+            return View(profileDto);
         }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Profile(ProfileDto profileDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.ErrorMessage = "Please fill all the required fields with valid values";
+                return View(profileDto);
+            }
+
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            user.FirstName = profileDto.FirstName;
+            user.LastName = profileDto.LastName;
+            user.Email = profileDto.Email;
+            user.PhoneNumber = profileDto.PhoneNumber;
+            user.Address = profileDto.Address;
+
+            var result = await userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+				ViewBag.SuccessMessage = "Profile updated successfully";
+			}
+            else
+            {
+				ViewBag.ErrorMessage = "Unable to update the profile: " + result.Errors.First().Description;
+			}
+
+            return View(profileDto);
+        }
+
+
+        
         
         public IActionResult AccessDenied()
         {
