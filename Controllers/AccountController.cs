@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -187,8 +188,116 @@ namespace BestStoreMVC.Controllers
         }
 
 
-        
-        
+        public IActionResult Password()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Password(PasswordDto passwordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.ErrorMessage = "Please fill all the required fields with valid values";
+                return View(passwordDto);
+            }
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var result = await userManager.ChangePasswordAsync(user, passwordDto.CurrentPassword, passwordDto.NewPassword);
+            if (result.Succeeded)
+            {
+                ViewBag.SuccessMessage = "Password changed successfully";
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "Error " + result.Errors.First().Description;
+            }
+
+            return View();
+        }
+
+        public IActionResult ForgetPassword()
+        {
+            if (signInManager.IsSignedIn(User))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgetPassword([Required, EmailAddress]String email)
+        {
+            if (signInManager.IsSignedIn(User))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewBag.Email = email;
+            if (!ModelState.IsValid)
+            {
+                ViewBag.EmailError = ModelState["email"]?.Errors.First().ErrorMessage;
+                return View();
+            }
+            var user = await userManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+                var token = await userManager.GeneratePasswordResetTokenAsync(user);
+                String resetUrl = Url.Action("Password", "Account", new { token }) ?? "URL generation failed";
+                
+                Console.WriteLine($"Password reset link: {resetUrl}");
+            }
+            ViewBag.SuccessMessage = "If the email is registered, a password reset link has been sent to it.";
+            return View();
+        }
+
+        public async Task<IActionResult> ResetPassword(string token, PasswordResetDto model)
+        {
+            if (signInManager.IsSignedIn(User))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.ErrorMessage = "Invalid token or model state.";
+                return View(model);
+            }
+            var user = await userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = "User not found.";
+                return View(model);
+            }
+
+            var result = await userManager.ResetPasswordAsync(user, token, model.Password);
+
+            if (result.Succeeded)
+            {
+                ViewBag.SuccessMessage = "Password reset successfully. You can now log in with your new password.";
+            }
+
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+
+            return View(model);
+        }
         public IActionResult AccessDenied()
         {
             return RedirectToAction("Index", "Home");
